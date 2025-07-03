@@ -64,18 +64,66 @@ const COLORS = [
   "#8b5cf6",
 ];
 
+// Surprise feature: Add a Help page to assist users
+function HelpPage() {
+  return (
+    <div className="bg-white shadow-sm border rounded-xl p-6 max-w-2xl mx-auto mt-6">
+      <h2 className="text-2xl font-bold text-slate-900 mb-4">Help & Support</h2>
+      <p className="text-slate-600 mb-2">
+        Welcome to WI Thinkers! If you have questions or face issues while
+        navigating the dashboard, please check the following resources:
+      </p>
+      <ul className="list-disc pl-5 space-y-2 text-slate-600">
+        <li>Make sure you are connected to the internet.</li>
+        <li>Use the sidebar to access Dashboard, Customers, and Overview.</li>
+        <li>
+          To view customer details, use the "View Details" button on any table
+          row.
+        </li>
+        <li>
+          If you're on mobile and the sidebar seems cut off, tap the hamburger
+          icon again to close it.
+        </li>
+      </ul>
+      <p className="text-slate-500 mt-4 text-sm">
+        For further support, contact us at{" "}
+        <a
+          href="mailto:support@withinkers.com"
+          className="text-indigo-600 underline"
+        >
+          support@withinkers.com
+        </a>
+      </p>
+    </div>
+  );
+}
+
 function Sidebar({ open, setOpen, currentView, setCurrentView }) {
   const menuItems = [
     { id: "dashboard", icon: Home, label: "Dashboard" },
     { id: "customers", icon: Users, label: "Customers" },
     { id: "overview", icon: BookOpen, label: "Overview" },
+    { id: "help", icon: Sparkles, label: "Help" }, // new page
   ];
 
   return (
     <aside
-      className={`bg-white min-h-screen w-64 lg:static fixed top-0 left-0 shadow-lg p-6 transition-transform z-40 ${
-        open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-      }`}
+      className={`
+        bg-white
+        fixed
+        inset-0
+        lg:static
+        lg:inset-auto
+        z-40
+        w-64
+        h-full
+        lg:h-auto
+        overflow-y-auto
+        shadow-lg
+        p-6
+        transition-transform
+        ${open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+      `}
     >
       <h2 className="text-xl font-bold mb-8 flex items-center gap-2 text-indigo-600">
         <PieChart size={24} /> WI Thinkers
@@ -252,7 +300,7 @@ function Dashboard({ setSelectedCustomer }) {
   return (
     <div className="space-y-8">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <StatCard
           icon={DollarSign}
           label="Total Sales"
@@ -284,19 +332,19 @@ function Dashboard({ setSelectedCustomer }) {
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {/* Enhanced Sales Trend */}
-        <div className="bg-white rounded-xl shadow-sm border p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-slate-900">
+        <div className="bg-white rounded-xl shadow-sm border p-4 md:p-6">
+          <div className="flex items-center justify-between mb-4 md:mb-6">
+            <h3 className="text-base md:text-lg font-semibold text-slate-900">
               Sales by Magazine
             </h3>
             <TrendingUp className="text-indigo-600" size={20} />
           </div>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={250}>
             <BarChart
               data={enhancedSalesData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+              margin={{ top: 20, right: 30, left: 0, bottom: 60 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
               <XAxis
@@ -328,17 +376,17 @@ function Dashboard({ setSelectedCustomer }) {
         </div>
 
         {/* Monthly Trend */}
-        <div className="bg-white rounded-xl shadow-sm border p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-slate-900">
+        <div className="bg-white rounded-xl shadow-sm border p-4 md:p-6">
+          <div className="flex items-center justify-between mb-4 md:mb-6">
+            <h3 className="text-base md:text-lg font-semibold text-slate-900">
               Monthly Performance
             </h3>
             <Calendar className="text-indigo-600" size={20} />
           </div>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={250}>
             <LineChart
               data={monthlyTrend}
-              margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+              margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
               <XAxis dataKey="month" stroke="#64748b" fontSize={12} />
@@ -373,87 +421,78 @@ function Dashboard({ setSelectedCustomer }) {
         </div>
       </div>
 
-      {/* Enhanced Top Customers Table */}
+      {/* Top Customers - Cards on mobile, table on md+ */}
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-        <div className="p-6 border-b border-slate-200">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
-              <Award className="text-indigo-600" size={20} />
-              Top Customers
-            </h3>
-            <span className="text-sm text-slate-500">Highest spenders</span>
-          </div>
+        {/* Cards for mobile */}
+        <div className="block md:hidden space-y-4 p-4">
+          {topCustomers.length === 0 && (
+            <div className="text-center text-slate-400">No top customers found.</div>
+          )}
+          {topCustomers.map((customer, index) => (
+            <div key={customer.id} className="border rounded-lg p-4 flex flex-col gap-2">
+              <div className="flex items-center gap-2 mb-2">
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${index === 0 ? "bg-yellow-100 text-yellow-800" : index === 1 ? "bg-gray-100 text-gray-800" : index === 2 ? "bg-orange-100 text-orange-800" : "bg-slate-100 text-slate-600"}`}>{index + 1}</div>
+                {index < 3 && <Star size={14} className="text-yellow-500" />}
+                <span className="font-medium text-slate-900 ml-2">{customer.name}</span>
+                <span className="text-xs text-slate-500 ml-auto">{customer.location}</span>
+              </div>
+              <div className="text-sm text-slate-600">
+                <Mail size={12} className="inline mr-1" />
+                <a href={`mailto:${customer.email}`} className="underline text-blue-600">{customer.email}</a>
+                <span className="ml-2"><Phone size={12} className="inline mr-1" />{customer.phone}</span>
+                {customer.instagram !== "-" && (
+                  <span className="ml-2 text-pink-600">@
+                    {customer.instagram.replace("https://instagram.com/", "")}
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-2 mt-2">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">{customer.magazine}</span>
+                <span className="font-semibold text-slate-900 ml-auto">${customer.total.toFixed(2)}</span>
+              </div>
+              <button
+                className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors mt-2 self-end"
+                onClick={() => setSelectedCustomer(customer)}
+              >
+                View Profile
+                <ArrowRight size={14} />
+              </button>
+            </div>
+          ))}
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        {/* Table for md+ */}
+        <div className="hidden md:block overflow-x-auto w-full">
+          <table className="w-full min-w-[600px]">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="text-left p-4 font-medium text-slate-700">
-                  Rank
-                </th>
-                <th className="text-left p-4 font-medium text-slate-700">
-                  Customer
-                </th>
-                <th className="text-left p-4 font-medium text-slate-700">
-                  Contact
-                </th>
-                <th className="text-left p-4 font-medium text-slate-700">
-                  Magazine
-                </th>
-                <th className="text-left p-4 font-medium text-slate-700">
-                  Total Spent
-                </th>
-                <th className="text-right p-4 font-medium text-slate-700">
-                  Action
-                </th>
+                <th className="text-left p-4 font-medium text-slate-700">Rank</th>
+                <th className="text-left p-4 font-medium text-slate-700">Customer</th>
+                <th className="text-left p-4 font-medium text-slate-700">Contact</th>
+                <th className="text-left p-4 font-medium text-slate-700">Magazine</th>
+                <th className="text-left p-4 font-medium text-slate-700">Total Spent</th>
+                <th className="text-right p-4 font-medium text-slate-700">Action</th>
               </tr>
             </thead>
             <tbody>
               {topCustomers.map((customer, index) => (
-                <tr
-                  key={customer.id}
-                  className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
-                >
+                <tr key={customer.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                   <td className="p-4">
                     <div className="flex items-center gap-2">
-                      <div
-                        className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                          index === 0
-                            ? "bg-yellow-100 text-yellow-800"
-                            : index === 1
-                            ? "bg-gray-100 text-gray-800"
-                            : index === 2
-                            ? "bg-orange-100 text-orange-800"
-                            : "bg-slate-100 text-slate-600"
-                        }`}
-                      >
-                        {index + 1}
-                      </div>
-                      {index < 3 && (
-                        <Star size={14} className="text-yellow-500" />
-                      )}
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${index === 0 ? "bg-yellow-100 text-yellow-800" : index === 1 ? "bg-gray-100 text-gray-800" : index === 2 ? "bg-orange-100 text-orange-800" : "bg-slate-100 text-slate-600"}`}>{index + 1}</div>
+                      {index < 3 && <Star size={14} className="text-yellow-500" />}
                     </div>
                   </td>
                   <td className="p-4">
                     <div>
-                      <div className="font-medium text-slate-900">
-                        {customer.name}
-                      </div>
-                      <div className="text-sm text-slate-500">
-                        {customer.location}
-                      </div>
+                      <div className="font-medium text-slate-900">{customer.name}</div>
+                      <div className="text-sm text-slate-500">{customer.location}</div>
                     </div>
                   </td>
                   <td className="p-4">
                     <div className="space-y-1 text-sm">
                       <div className="flex items-center gap-2 text-slate-600">
                         <Mail size={12} />
-                        <a
-                          href={`mailto:${customer.email}`}
-                          className="underline text-blue-600"
-                        >
-                          {customer.email}
-                        </a>
+                        <a href={`mailto:${customer.email}`} className="underline text-blue-600">{customer.email}</a>
                       </div>
                       <div className="flex items-center gap-2 text-slate-600">
                         <Phone size={12} />
@@ -462,31 +501,18 @@ function Dashboard({ setSelectedCustomer }) {
                       {customer.instagram !== "-" && (
                         <div className="flex items-center gap-2 text-pink-600">
                           <span className="text-sm font-medium">@</span>
-                          <a
-                            href={customer.instagram}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="underline"
-                          >
-                            {customer.instagram.replace(
-                              "https://instagram.com/",
-                              ""
-                            )}
+                          <a href={customer.instagram} target="_blank" rel="noopener noreferrer" className="underline">
+                            {customer.instagram.replace("https://instagram.com/", "")}
                           </a>
                         </div>
                       )}
                     </div>
                   </td>
-
                   <td className="p-4">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                      {customer.magazine}
-                    </span>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">{customer.magazine}</span>
                   </td>
                   <td className="p-4">
-                    <div className="font-semibold text-slate-900">
-                      ${customer.total.toFixed(2)}
-                    </div>
+                    <div className="font-semibold text-slate-900">${customer.total.toFixed(2)}</div>
                   </td>
                   <td className="p-4 text-right">
                     <button
@@ -526,56 +552,50 @@ function Dashboard({ setSelectedCustomer }) {
   );
 }
 
-function Customers() {
+function Customers({ setSelectedCustomer }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
 
   const filteredCustomers = CUSTOMERS.filter((customer) => {
+    const name = customer.name?.toLowerCase().trim() || "";
+    const email = customer.email?.toLowerCase().trim() || "";
+    const status = customer.status?.toLowerCase().trim() || "";
+    const search = searchTerm.toLowerCase().trim();
+    const filterStatus = statusFilter.toLowerCase().trim();
     const matchesSearch =
-      customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customer.email.toLowerCase().includes(searchTerm.toLowerCase());
+      name.includes(search) || email.includes(search);
     const matchesStatus =
-      statusFilter === "All" || customer.status === statusFilter;
+      filterStatus === "all" || status === filterStatus;
     return matchesSearch && matchesStatus;
   });
-
-  if (selectedCustomer) {
-    return (
-      <CustomerDetail
-        customer={selectedCustomer}
-        onBack={() => setSelectedCustomer(null)}
-      />
-    );
-  }
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="text-2xl font-bold text-slate-900">Customers</h2>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 flex-wrap">
           <input
             type="text"
             placeholder="Search customers..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-full sm:w-auto"
           />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-full sm:w-auto"
           >
             <option value="All">All Status</option>
-            <option value="Buyer">Buyers</option>
-            <option value="Viewer">Viewers</option>
+            <option value="Buyer">Buyer</option>
+            <option value="Viewer">Viewer</option>
           </select>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white p-4 rounded-lg shadow-sm border">
           <div className="flex items-center gap-3">
             <Users className="text-indigo-600" size={20} />
@@ -611,43 +631,71 @@ function Customers() {
         </div>
       </div>
 
-      {/* Customer List */}
+      {/* Customer List - Cards on mobile, table on md+ */}
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        {/* Cards for mobile */}
+        <div className="block md:hidden space-y-4 p-4">
+          {filteredCustomers.length === 0 && (
+            <div className="text-center text-slate-400">No customers found.</div>
+          )}
+          {filteredCustomers.map((customer) => (
+            <div key={customer.id} className="border rounded-lg p-4 flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium text-slate-900">{customer.name}</div>
+                  <div className="text-sm text-slate-500 flex items-center gap-1">
+                    <MapPin size={12} />
+                    {customer.location}
+                  </div>
+                </div>
+                <button
+                  className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+                  onClick={() => setSelectedCustomer(customer)}
+                >
+                  View Details
+                  <ArrowRight size={14} />
+                </button>
+              </div>
+              <div className="text-sm text-slate-600">
+                <a href={`mailto:${customer.email}`} className="underline text-blue-600">{customer.email}</a>
+                <span className="ml-2">{customer.phone}</span>
+                {customer.instagram !== "-" && (
+                  <span className="ml-2 text-pink-600">@
+                    {customer.instagram.replace("https://instagram.com/", "")}
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-2 mt-2">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                  {customer.magazine}
+                </span>
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${customer.status === "Buyer" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"}`}>{customer.status}</span>
+                <span className="font-semibold text-slate-900 ml-auto">
+                  {customer.status === "Buyer" ? `$${customer.amount.toFixed(2)}` : "-"}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Table for md+ */}
+        <div className="hidden md:block overflow-x-auto w-full">
+          <table className="w-full min-w-[600px]">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="text-left p-4 font-medium text-slate-700">
-                  Customer
-                </th>
-                <th className="text-left p-4 font-medium text-slate-700">
-                  Contact
-                </th>
-                <th className="text-left p-4 font-medium text-slate-700">
-                  Magazine
-                </th>
-                <th className="text-left p-4 font-medium text-slate-700">
-                  Status
-                </th>
-                <th className="text-left p-4 font-medium text-slate-700">
-                  Amount
-                </th>
-                <th className="text-right p-4 font-medium text-slate-700">
-                  Action
-                </th>
+                <th className="text-left p-4 font-medium text-slate-700">Customer</th>
+                <th className="text-left p-4 font-medium text-slate-700">Contact</th>
+                <th className="text-left p-4 font-medium text-slate-700">Magazine</th>
+                <th className="text-left p-4 font-medium text-slate-700">Status</th>
+                <th className="text-left p-4 font-medium text-slate-700">Amount</th>
+                <th className="text-right p-4 font-medium text-slate-700">Action</th>
               </tr>
             </thead>
             <tbody>
               {filteredCustomers.map((customer) => (
-                <tr
-                  key={customer.id}
-                  className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
-                >
+                <tr key={customer.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                   <td className="p-4">
                     <div>
-                      <div className="font-medium text-slate-900">
-                        {customer.name}
-                      </div>
+                      <div className="font-medium text-slate-900">{customer.name}</div>
                       <div className="text-sm text-slate-500 flex items-center gap-1">
                         <MapPin size={12} />
                         {customer.location}
@@ -657,54 +705,29 @@ function Customers() {
                   <td className="p-4">
                     <div className="space-y-1 text-sm">
                       <div className="text-slate-600">
-                        <a
-                          href={`mailto:${customer.email}`}
-                          className="underline text-blue-600"
-                        >
-                          {customer.email}
-                        </a>
+                        <a href={`mailto:${customer.email}`} className="underline text-blue-600">{customer.email}</a>
                       </div>
                       <div className="text-slate-500">{customer.phone}</div>
                       {customer.instagram !== "-" && (
                         <div className="text-pink-600">
-                          <a
-                            href={customer.instagram}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="underline"
-                          >
-                            @
-                            {customer.instagram.replace(
-                              "https://instagram.com/",
-                              ""
-                            )}
+                          <a href={customer.instagram} target="_blank" rel="noopener noreferrer" className="underline">
+                            @{customer.instagram.replace("https://instagram.com/", "")}
                           </a>
                         </div>
                       )}
                     </div>
                   </td>
-
                   <td className="p-4">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
                       {customer.magazine}
                     </span>
                   </td>
                   <td className="p-4">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        customer.status === "Buyer"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-blue-100 text-blue-800"
-                      }`}
-                    >
-                      {customer.status}
-                    </span>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${customer.status === "Buyer" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"}`}>{customer.status}</span>
                   </td>
                   <td className="p-4">
                     <div className="font-semibold text-slate-900">
-                      {customer.status === "Buyer"
-                        ? `$${customer.amount.toFixed(2)}`
-                        : "-"}
+                      {customer.status === "Buyer" ? `$${customer.amount.toFixed(2)}` : "-"}
                     </div>
                   </td>
                   <td className="p-4 text-right">
@@ -948,8 +971,8 @@ function Overview() {
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white p-6 rounded-xl shadow-sm border">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-indigo-100 rounded-lg">
               <BookOpen className="text-indigo-600" size={24} />
@@ -963,7 +986,7 @@ function Overview() {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border">
+        <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-green-100 rounded-lg">
               <DollarSign className="text-green-600" size={24} />
@@ -977,7 +1000,7 @@ function Overview() {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border">
+        <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-blue-100 rounded-lg">
               <Target className="text-blue-600" size={24} />
@@ -991,7 +1014,7 @@ function Overview() {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border">
+        <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-orange-100 rounded-lg">
               <Users className="text-orange-600" size={24} />
@@ -1006,100 +1029,82 @@ function Overview() {
         </div>
       </div>
 
-      {/* Magazine Performance Table */}
+      {/* Magazine Performance - Cards on mobile, table on md+ */}
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-        <div className="p-6 border-b border-slate-200">
-          <h3 className="text-lg font-semibold text-slate-900">
-            Magazine Performance
-          </h3>
-          <p className="text-sm text-slate-500 mt-1">
-            Detailed breakdown by publication
-          </p>
+        {/* Cards for mobile */}
+        <div className="block md:hidden space-y-4 p-4">
+          {magazineStats.length === 0 && (
+            <div className="text-center text-slate-400">No magazines found.</div>
+          )}
+          {magazineStats.map((magazine, index) => (
+            <div key={magazine.name} className="border rounded-lg p-4 flex flex-col gap-2">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                  <BookOpen className="text-indigo-600" size={16} />
+                </div>
+                <div>
+                  <div className="font-medium text-slate-900">{magazine.name}</div>
+                  <div className="text-sm text-slate-500">Publication #{index + 1}</div>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-2">
+                <span className="font-semibold text-slate-900">Customers: {magazine.totalCustomers}</span>
+                <span className="font-semibold text-green-600">Buyers: {magazine.buyers}</span>
+                <span className="font-semibold text-blue-600">Viewers: {magazine.viewers}</span>
+                <span className="font-semibold text-slate-900">Revenue: ${magazine.revenue.toFixed(2)}</span>
+                <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${parseFloat(magazine.conversionRate) >= 50 ? "bg-green-100 text-green-800" : parseFloat(magazine.conversionRate) >= 30 ? "bg-yellow-100 text-yellow-800" : "bg-red-100 text-red-800"}`}>{magazine.conversionRate}%</span>
+              </div>
+            </div>
+          ))}
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        {/* Table for md+ */}
+        <div className="hidden md:block overflow-x-auto w-full">
+          <table className="w-full min-w-[600px]">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="text-left p-4 font-medium text-slate-700">
-                  Magazine
-                </th>
-                <th className="text-left p-4 font-medium text-slate-700">
-                  Total Customers
-                </th>
-                <th className="text-left p-4 font-medium text-slate-700">
-                  Buyers
-                </th>
-                <th className="text-left p-4 font-medium text-slate-700">
-                  Viewers
-                </th>
-                <th className="text-left p-4 font-medium text-slate-700">
-                  Revenue
-                </th>
-                <th className="text-left p-4 font-medium text-slate-700">
-                  Conversion Rate
-                </th>
+                <th className="text-left p-4 font-medium text-slate-700">Magazine</th>
+                <th className="text-left p-4 font-medium text-slate-700">Total Customers</th>
+                <th className="text-left p-4 font-medium text-slate-700">Buyers</th>
+                <th className="text-left p-4 font-medium text-slate-700">Viewers</th>
+                <th className="text-left p-4 font-medium text-slate-700">Revenue</th>
+                <th className="text-left p-4 font-medium text-slate-700">Conversion Rate</th>
               </tr>
             </thead>
             <tbody>
               {magazineStats.map((magazine, index) => (
-                <tr
-                  key={magazine.name}
-                  className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
-                >
+                <tr key={magazine.name} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                   <td className="p-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
                         <BookOpen className="text-indigo-600" size={16} />
                       </div>
                       <div>
-                        <div className="font-medium text-slate-900">
-                          {magazine.name}
-                        </div>
-                        <div className="text-sm text-slate-500">
-                          Publication #{index + 1}
-                        </div>
+                        <div className="font-medium text-slate-900">{magazine.name}</div>
+                        <div className="text-sm text-slate-500">Publication #{index + 1}</div>
                       </div>
                     </div>
                   </td>
                   <td className="p-4">
-                    <div className="font-semibold text-slate-900">
-                      {magazine.totalCustomers}
-                    </div>
+                    <div className="font-semibold text-slate-900">{magazine.totalCustomers}</div>
                   </td>
                   <td className="p-4">
                     <div className="flex items-center gap-2">
                       <ShoppingCart className="text-green-600" size={16} />
-                      <span className="font-semibold text-green-600">
-                        {magazine.buyers}
-                      </span>
+                      <span className="font-semibold text-green-600">{magazine.buyers}</span>
                     </div>
                   </td>
                   <td className="p-4">
                     <div className="flex items-center gap-2">
                       <Eye className="text-blue-600" size={16} />
-                      <span className="font-semibold text-blue-600">
-                        {magazine.viewers}
-                      </span>
+                      <span className="font-semibold text-blue-600">{magazine.viewers}</span>
                     </div>
                   </td>
                   <td className="p-4">
-                    <div className="font-semibold text-slate-900">
-                      ${magazine.revenue.toFixed(2)}
-                    </div>
+                    <div className="font-semibold text-slate-900">${magazine.revenue.toFixed(2)}</div>
                   </td>
                   <td className="p-4">
                     <div className="flex items-center gap-2">
-                      <div
-                        className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          parseFloat(magazine.conversionRate) >= 50
-                            ? "bg-green-100 text-green-800"
-                            : parseFloat(magazine.conversionRate) >= 30
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {magazine.conversionRate}%
-                      </div>
+                      <div className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${parseFloat(magazine.conversionRate) >= 50 ? "bg-green-100 text-green-800" : parseFloat(magazine.conversionRate) >= 30 ? "bg-yellow-100 text-yellow-800" : "bg-red-100 text-red-800"}`}>{magazine.conversionRate}%</div>
                     </div>
                   </td>
                 </tr>
@@ -1132,13 +1137,15 @@ export default function App() {
         return <Customers setSelectedCustomer={setSelectedCustomer} />;
       case "overview":
         return <Overview />;
+      case "help":
+        return <HelpPage />;
       default:
         return <Dashboard setSelectedCustomer={setSelectedCustomer} />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen flex bg-slate-50">
       {/* Sidebar */}
       <Sidebar
         open={sidebarOpen}
@@ -1148,7 +1155,7 @@ export default function App() {
       />
 
       {/* Main Content */}
-      <div className="flex-1 lg:ml-0">
+      <div className="flex-1 flex flex-col min-h-screen">
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4">
           <div className="flex items-center justify-between">
@@ -1180,7 +1187,7 @@ export default function App() {
         </header>
 
         {/* Content */}
-        <main className="p-6">{renderView()}</main>
+        <main className="flex-1 p-4 overflow-auto">{renderView()}</main>
       </div>
 
       {/* Overlay for mobile */}

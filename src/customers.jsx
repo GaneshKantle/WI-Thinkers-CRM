@@ -1379,6 +1379,7 @@ export const CUSTOMERS = [
     "date":"2024-09-05",
     "instagram":"https://instagram.com/jordan_smith"
   },
+  
   {
     "id":1,
     "name":"Morgan Johnson",
