@@ -12,6 +12,12 @@ export const CUSTOMERS = [
       "ALPHERO"
     ],
     "status": "Buyer",
+    "stage": "Warm-up",
+    "qualityFlag": true,
+    "congratulated": false,
+    "theme": "Red Carpet",
+    "meetingDate": "2024-01-15",
+    "notes": "Great potential client, interested in fashion photography",
     "totalAmount": 60.0,
     "transactions": [
       {
@@ -33,6 +39,10 @@ export const CUSTOMERS = [
       "ALPHERO"
     ],
     "status": "Buyer",
+    "stage": "Meeting",
+    "qualityFlag": false,
+    "congratulated": true,
+    "theme": "Body Art",
     "totalAmount": 54.8,
     "transactions": [
       {
@@ -54,6 +64,12 @@ export const CUSTOMERS = [
       "ALPHERO"
     ],
     "status": "Buyer",
+    "stage": "Editing",
+    "qualityFlag": true,
+    "congratulated": false,
+    "theme": "Fashion",
+    "meetingDate": "2024-01-30",
+    "notes": "Currently editing final photos",
     "totalAmount": 29.99,
     "transactions": [
       {
@@ -75,6 +91,12 @@ export const CUSTOMERS = [
       "ALPHERO"
     ],
     "status": "Buyer",
+    "stage": "Sales",
+    "qualityFlag": false,
+    "congratulated": true,
+    "theme": "Red Carpet",
+    "meetingDate": "2024-03-10",
+    "notes": "Ready for final sale discussion",
     "totalAmount": 66.0,
     "transactions": [
       {
@@ -117,6 +139,12 @@ export const CUSTOMERS = [
       "ALPHERO"
     ],
     "status": "Buyer",
+    "stage": "Meeting",
+    "qualityFlag": true,
+    "congratulated": false,
+    "theme": "Body Art",
+    "meetingDate": "2024-02-15",
+    "notes": "Follow up meeting needed",
     "totalAmount": 112.0,
     "transactions": [
       {
@@ -184,6 +212,12 @@ export const CUSTOMERS = [
       "ALPHERO"
     ],
     "status": "Buyer",
+    "stage": "Warm-up",
+    "qualityFlag": false,
+    "congratulated": true,
+    "theme": "Fashion",
+    "meetingDate": "2024-01-25",
+    "notes": "Initial contact made, waiting for response",
     "totalAmount": 42.0,
     "transactions": [
       {
